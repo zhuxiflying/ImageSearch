@@ -4,3 +4,6 @@
 /.tern-project
 /README.md
 /build.gradle
+/build/
+/target/
+/.classpath
