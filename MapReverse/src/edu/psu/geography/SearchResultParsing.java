@@ -33,10 +33,10 @@ public class SearchResultParsing {
 
 	public static void main(String[] args) throws Exception {
 		loadJSONFile();
-		// resultInfo();
+		 resultInfo();
 		// resultAnalyzer();
 		// iconImageDownload();
-		originImageDownload();
+		//originImageDownload();
 	}
 
 	/**
