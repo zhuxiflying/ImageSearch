@@ -1,0 +1,102 @@
+html, body {
+	height: 100%;
+	width: 100%;
+	padding:0;
+	margin:0;
+	overflow: hidden;
+}
+
+.grid-container {
+	display: grid;
+	height:100%;
+	width: 100%;
+	grid-template-columns: 6fr 4fr;
+	grid-column-gap: 20px;
+	padding:10px;
+}
+
+.map-container {
+	height: 100%;
+	width: 100%;
+	display: grid;
+	grid-template-rows: 7fr 3fr;
+	grid-row-gap: 20px;
+
+}
+
+.info-container {
+	height: 100%;
+	width: 100%;
+	display: grid;
+	grid-template-rows: 5fr 5fr;
+	grid-row-gap: 20px;
+}
+
+.icon-maps {
+	height:100%;
+	width: 100%;
+	border-color: #ccc;
+	border-width: 1px;
+	border-radius: 15px;
+	border-style: solid;
+		padding:5px;
+}
+
+.test{
+	height:100%;
+	width: 100%;
+	display: grid;
+	grid-template-columns: repeat(auto-fill,minmax(100px, 1fr));
+	grid-row-gap: 5px;
+	grid-column-gap: 5px;
+	overflow:auto;
+}
+
+.slidecontainer{
+	width:100%;
+	padding:10px;
+}
+
+.slider{
+	width:100%;
+}
+
+.icon-image {
+	height: 100px;
+	width:100px;
+	border-style:solid;
+
+}
+
+.bar-chart {
+	height: 100%;
+	border-color: #ccc;
+	border-style:solid;
+	border-width: 1px;
+	border-radius: 15px;
+}
+
+.origin-image {
+	height: 100%;
+	border-color: #ccc;
+	border-style:solid;
+	border-width: 1px;
+	border-radius: 15px;
+}
+
+.tree-map {
+	height: 100%;
+	border-color: #ccc;
+	border-style:solid;
+	border-width: 1px;
+	border-radius: 15px;
+}
+
+img {
+    max-width: 100%;
+    max-height: 100%;
+    width:100px;
+    height:100px;
+    border-color: rgb(174,1, 128);
+	border-bottom-width: 3px;
+}

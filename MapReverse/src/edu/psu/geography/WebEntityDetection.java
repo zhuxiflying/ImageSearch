@@ -98,12 +98,14 @@ public class WebEntityDetection {
 	private static void loadImageList() throws Exception {
 		// TODO Auto-generated method stub
 		imageList = new HashSet<String>();
-		Reader in = new FileReader(fileName);
-		Iterable<CSVRecord> records = CSVFormat.EXCEL.withFirstRecordAsHeader().parse(in);
-		for (CSVRecord record : records) {
-			String hashtags = record.get("loca_url");
-			imageList.add(hashtags);
-		}
+		String url = "D:\\Projects\\ViralMap\\viral_examples\\NateSilver_Example\\origin2\\2.jpg";
+		imageList.add(url);
+//		Reader in = new FileReader(fileName);
+//		Iterable<CSVRecord> records = CSVFormat.EXCEL.withFirstRecordAsHeader().parse(in);
+//		for (CSVRecord record : records) {
+//			String hashtags = record.get("loca_url");
+//			imageList.add(hashtags);
+//		}
 	}
 
 	/**
