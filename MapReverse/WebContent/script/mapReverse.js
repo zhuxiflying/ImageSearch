@@ -1,5 +1,5 @@
 /**
- * http://usejsdoc.org/
+ * This javascripts render Index.html with image search result.
  */
 
 var imageData;
