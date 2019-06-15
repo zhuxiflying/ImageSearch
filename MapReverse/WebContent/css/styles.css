@@ -50,8 +50,7 @@ html, body {
 	
 	height: 100px;
 	width:100px;
-	border-style:solid;
-	
+
 }
 
 .bar-chart {
@@ -96,6 +95,4 @@ html, body {
 img {
     max-width: 100%;
     max-height: 100%;
-    border-color: rgb(174,1, 128);
-	border-bottom-width: 1px;
 }
