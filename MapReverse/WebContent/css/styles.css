@@ -26,7 +26,7 @@ html, body {
 	border-style: solid;
 	
 	grid-column-start: 1;
-    grid-column-end: 7;
+    grid-column-end: 6;
     grid-row-start: 1;
     grid-row-end: 8;
     
@@ -48,8 +48,7 @@ html, body {
 
 .icon-image {
 	
-	height: 100px;
-	width:100px;
+	height:100px;
 
 }
 
@@ -61,22 +60,41 @@ html, body {
 	border-radius: 15px;
 	
 	grid-column-start: 1;
-    grid-column-end: 7;
+    grid-column-end: 6;
     grid-row-start: 8;
     grid-row-end: 11;
 }
 
-.origin-image {
+.image-container {
 
 	border-color: #ccc;
 	border-style:solid;
 	border-width: 1px;
 	border-radius: 15px;
 
-	grid-column-start: 7;
+	grid-column-start: 6;
     grid-column-end: 11;
     grid-row-start: 1;
     grid-row-end: 6;
+    
+    display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-column-gap: 10px;
+	
+	padding:10px;
+}
+
+.origin-image{
+	
+   	border-color: #ccc;
+	border-style:solid;
+	border-width: 1px;
+}
+
+.image-info{
+	
+	padding:10px;
+	
 }
 
 .tree-map {
@@ -86,10 +104,28 @@ html, body {
 	border-width: 1px;
 	border-radius: 15px;
 	
-	grid-column-start: 7;
+	grid-column-start: 6;
     grid-column-end: 11;
     grid-row-start: 6;
     grid-row-end: 11;
+}
+
+.text-title{
+	font-size: 25px;
+	font-weight: bold;
+	margin:5px;
+}
+
+.text-entry{
+	
+	font-size: 20px;
+	margin:10px;
+}
+
+.text-entry2{
+	
+	font-size: 20px;
+	margin:10px;
 }
 
 img {
