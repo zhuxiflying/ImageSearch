@@ -93,7 +93,8 @@ html, body {
 
 .image-info{
 	
-	padding:10px;
+	padding-left:10px;
+	overflow-y:auto;
 	
 }
 
@@ -114,18 +115,35 @@ html, body {
 	font-size: 25px;
 	font-weight: bold;
 	margin:5px;
+	margin-top:20px;
 }
 
 .text-entry{
 	
 	font-size: 20px;
-	margin:10px;
+	margin:3px;
+	margin-left:20px;
 }
+
+.text-link{
+	
+	font-size: 20px;
+	margin:3px;
+	margin-left:20px;
+}
+
+.text-entry1{
+	font-size: 20px;
+	margin:3px;
+	margin-left:20px;
+}
+
 
 .text-entry2{
 	
 	font-size: 20px;
-	margin:10px;
+	margin:3px;
+	margin-left:20px;
 }
 
 img {
