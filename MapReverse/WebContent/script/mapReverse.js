@@ -40,7 +40,7 @@ function loadIconImages(data) {
 	gallery_container.selectAll("*").remove();
 	// append div for icon images
 	var icon_maps = gallery_container.selectAll('.icon-image').data(data)
-			.enter().append('div').attr('class', 'icon-image');
+			.enter().append('div').attr('class', 'icon-image').style('border-bottom-color',function(d){return bar_color(d.Score);});
 
 	// append image element for div container
 	gallery_container.selectAll('.icon-image').append('img').attr('src',
@@ -218,7 +218,7 @@ function drawSliderBar(dataArray)
 	var histogram = d3.histogram()
     .value(function(d) { return d.Score; })
     .domain(x.domain())
-    .thresholds(x.ticks(20));
+    .thresholds(x.ticks(40));
 	
 	
 	
