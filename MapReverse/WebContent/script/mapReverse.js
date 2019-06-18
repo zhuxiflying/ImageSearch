@@ -3,22 +3,43 @@
  */
 
 var imageData;
+var bar_color;
 
 d3.json("NateSilver_Example/NateSilver_Example2.json").then(function(data) {
 	imageData = data;
-	loadIconImages();
-
+	
+	
+	bar_color = d3.scaleQuantile().range(["#feebe2","#fbb4b9","#f768a1","#ae017e"]);
+	var data = d3.nest().key(function(d) {
+		return d.Crawl_Date.split("-")[0] + "-" + d.Crawl_Date.split("-")[1];
+	}).rollup(function(v) {
+		return {
+			count : v.length,
+			meanScore : d3.mean(v, function(d) {
+				return d.Score;
+			})
+		};
+	}).entries(imageData);
+    var min_score = d3.min(data,function(d){ return d.value.meanScore});
+    var max_score = d3.max(data,function(d){ return d.value.meanScore});
+    bar_color.domain([min_score,max_score]);
+    
+    
+	loadIconImages(imageData);
 	drawBarChart(imageData);
-
+	drawSliderBar(imageData);
+	
 });
 
 // load data into icon image gallery
-function loadIconImages() {
+function loadIconImages(data) {
 
 	var gallery_container = d3.select('.map-gallery');
 
+	//clean previous elements
+	gallery_container.selectAll("*").remove();
 	// append div for icon images
-	var icon_maps = gallery_container.selectAll('.icon-image').data(imageData)
+	var icon_maps = gallery_container.selectAll('.icon-image').data(data)
 			.enter().append('div').attr('class', 'icon-image');
 
 	// append image element for div container
@@ -114,8 +135,6 @@ function drawBarChart(dataArray) {
 			})
 		};
 	}).entries(dataArray);
-
-	console.log(data);
 	
 	//sort the data by date
 	data.sort(function(a,b){
@@ -124,7 +143,7 @@ function drawBarChart(dataArray) {
 	
 	
 	//calculate the chart size according to the client browser size;
-	var svg = d3.select("svg"),
+	var svg = d3.select('.bar-chart').select("svg"),
     margin = {top: 20, right: 20, bottom: 30, left: 40},
     width = svg.node().clientWidth- margin.left - margin.right,
     height = svg.node().clientHeight - margin.top - margin.bottom;
@@ -133,6 +152,7 @@ function drawBarChart(dataArray) {
 	// define scales for x and y axis
 	var x = d3.scaleBand().rangeRound([0, width]).padding(0.1),
     y = d3.scaleLinear().rangeRound([height, 0]);
+
 	
 	// project the coordinates due to the margin setting;
 	var g = svg.append("g")
@@ -140,7 +160,11 @@ function drawBarChart(dataArray) {
 	
 	//calculate the domain according to data, use keys as x, use max count as the y upper bound;
     x.domain(data.map(function(d) { return d.key; }));
-    y.domain([0, d3.max(data, function(d) { return d.value.count; })]);
+    
+    var max_frequency = d3.max(data, function(d) { return d.value.count; });
+    y.domain([0, max_frequency]);
+    
+
 
     //draw x axis
     g.append("g")
@@ -160,14 +184,137 @@ function drawBarChart(dataArray) {
         .text("Frequency");
 
     //draw bars
-    g.selectAll(".bar")
+    g.selectAll("rect")
       .data(data)
       .enter().append("rect")
-        .attr("class", "bar")
+      .style('fill',function(d) { return bar_color(d.value.meanScore); })
         .attr("id",function(d) { return d.key; })
         .attr("x", function(d) { return x(d.key); })
         .attr("y", function(d) { return y(d.value.count); })
         .attr("width", x.bandwidth())
-        .attr("height", function(d) { return height - y(d.value.count); });
+        .attr("height", function(d) { return height - y(d.value.count); })
+        .on("click",filterByDate);
+}
+
+function drawSliderBar(dataArray)
+{
+	var svg = d3.select('.slider-bar').select("svg"),
+		margin = {top: 40, right: 40, bottom: 60, left: 80},
+	    width = svg.node().clientWidth- margin.left - margin.right,
+	    height = svg.node().clientHeight - margin.top - margin.bottom;
+	
+	   
+	var x = d3.scaleLinear()
+    .domain([0, 100])
+    .range([0, width])
+    .clamp(true);
     
+    
+    var y = d3.scaleLinear()
+    .range([height, 0]);
+	
+    
+	
+	var histogram = d3.histogram()
+    .value(function(d) { return d.Score; })
+    .domain(x.domain())
+    .thresholds(x.ticks(20));
+	
+	
+	
+	var bins = histogram(dataArray);
+	console.log(bins);
+	
+	y.domain([0, d3.max(bins, function(d) { return d.length; })]);
+	
+	var hist = svg.append("g")
+    .attr("class", "histogram")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+	
+	var bar = hist.selectAll(".hist-bar")
+    .data(bins)
+    .enter()
+    .append("g")
+    .attr("class", "hist-bar")
+    .attr("transform", function(d) {
+      return "translate(" + x(d.x0) + "," + y(d.length) + ")";
+    });
+    
+    bar.append("rect")
+    .attr("class", "hist-bar")
+    .attr("x", 1)
+    .attr("width", function(d) { return x(d.x1) - x(d.x0); })
+    .attr("height", function(d) { return height - y(d.length); })
+    .attr("fill",function(d) { return bar_color(d.x0); });
+	
+    var currentValue = 0;
+
+    
+    var slider = svg.append("g")
+        .attr("class", "slider")
+        .attr("transform", "translate(" + margin.left + "," + (margin.top+height+5) + ")");
+
+    slider.append("line")
+        .attr("class", "track")
+        .attr("x1", x.range()[0])
+        .attr("x2", x.range()[1])
+      .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
+        .attr("class", "track-inset")
+      .select(function() { return this.parentNode.appendChild(this.cloneNode(true)); })
+        .attr("class", "track-overlay")
+        .call(d3.drag()
+            .on("start.interrupt", function() { slider.interrupt(); })
+            .on("start drag", function() {
+              currentValue = d3.event.x;
+              //make sure the handle located within the range, assisted by the clamp setting of x axis;
+              handle.attr("cx", x(x.invert(currentValue)));})
+            .on("end",function(){
+               var threshold =  x.invert(d3.event.x);
+                filterBySocre(threshold);
+            }));
+
+    slider.insert("g", ".track-overlay")
+        .attr("class", "ticks")
+        .attr("transform", "translate(0," + 18 + ")")
+      .selectAll("text")
+        .data(x.ticks(10))
+        .enter()
+        .append("text")
+        .attr("x", x)
+        .attr("y", 10)
+        .attr("text-anchor", "middle")
+        .text(function(d) { return d; });
+
+    var handle = slider.insert("circle", ".track-overlay")
+        .attr("class", "handle")
+        .attr("r", 9);
+    
+	
+	
+}
+
+function filterByDate(data)
+{
+	//filter data by the selected bar date;
+	var sub_data = imageData.filter(function(d){return d.Crawl_Date.split("-")[0] + "-" + d.Crawl_Date.split("-")[1] == data.key});
+	
+	//load the icon image area by subset of data;
+	loadIconImages(sub_data);
+	
+	//style the selected bar
+	d3.select('.bar-selected').classed('bar-selected', false);
+	d3.select(this).classed('bar-selected', true);
+	
+}
+
+function filterBySocre(threshold)
+{
+    console.log(threshold); 
+	//filter data by the selected bar date;
+	var sub_data = imageData.filter(function(d){return d.Score >= threshold});
+	
+	//load the icon image area by subset of data;
+	loadIconImages(sub_data);
+	
+	
 }
