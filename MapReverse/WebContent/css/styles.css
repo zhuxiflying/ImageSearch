@@ -135,15 +135,28 @@ html, body {
 	overflow-y: auto;
 }
 
-.tree-map {
-	border-color: #ccc;
-	border-style: solid;
-	border-width: 1px;
-	border-radius: 15px;
+.treemap {
 	grid-column-start: 8;
 	grid-column-end: 11;
 	grid-row-start: 7;
 	grid-row-end: 11;
+}
+
+.treemap-svg {
+	height: 100%;
+	width: 100%;
+}
+
+.tree-rect{
+fill: cadetblue;
+  opacity: 0.3;
+  stroke: white;
+}
+
+.treemap-text{
+  font-family: "Helvetica Neue", Helvetica, sans-serif;
+  fill: grey;
+  font-size: 12px;
 }
 
 .text-title {

@@ -9,18 +9,21 @@ d3.json("NateSilver_Example/NateSilver_Example2.json").then(function(data) {
 
 	imageData = data;
 	initialize();
+	
+	d3.select('.control-panel').on('dblclick',initialize);
 
 });
 
-//initialize all the components;
+// initialize all the components;
 function initialize() {
 	initialColorScale(imageData);
 	loadIconImages(imageData);
 	drawBarChart(imageData);
 	drawSliderBar(imageData);
+	drawTreemap(imageData);
 }
 
-//initialize color scale
+// initialize color scale
 function initialColorScale(dataArray) {
 	bar_color = d3.scaleQuantile().range(
 			[ "#feebe2", "#fbb4b9", "#f768a1", "#ae017e" ]);
@@ -42,7 +45,6 @@ function initialColorScale(dataArray) {
 		return d.value.meanScore
 	});
 	bar_color.domain([ min_score, max_score ]);
-
 }
 
 // load data into icon image gallery
@@ -50,7 +52,7 @@ function loadIconImages(data) {
 
 	var gallery_container = d3.select('.map-gallery');
 
-	//clean previous elements
+	// clean previous elements
 	gallery_container.selectAll("*").remove();
 	// append div for icon images
 	var icon_maps = gallery_container.selectAll('.icon-image').data(data)
@@ -74,7 +76,6 @@ function loadIconImages(data) {
 function loadOriginalImage(data) {
 
 	// test whether the original image exist
-
 	if (typeof data.OriginImage !== "undefined") {
 
 		d3.select('.image-container').html("");
@@ -138,10 +139,11 @@ function loadOriginalImage(data) {
 	}
 }
 
-//drawBarchart
+// drawBarchart
 function drawBarChart(dataArray) {
 
-	//aggregate date by key, we use the year and month fields of the date as the new key to aggregate data.
+	// aggregate date by key, we use the year and month fields of the date as
+	// the new key to aggregate data.
 	var data = d3.nest().key(function(d) {
 		return d.Crawl_Date.split("-")[0] + "-" + d.Crawl_Date.split("-")[1];
 	}).rollup(function(v) {
@@ -153,12 +155,12 @@ function drawBarChart(dataArray) {
 		};
 	}).entries(dataArray);
 
-	//sort the data by date
+	// sort the data by date
 	data.sort(function(a, b) {
 		return new Date(a.key) - new Date(b.key);
 	});
 
-	//calculate the chart size according to the client browser size;
+	// calculate the chart size according to the client browser size;
 	var svg = d3.select('.bar-chart').select("svg"), margin = {
 		top : 20,
 		right : 20,
@@ -168,6 +170,8 @@ function drawBarChart(dataArray) {
 			.node().clientHeight
 			- margin.top - margin.bottom;
 
+	svg.html("");
+	
 	// define scales for x and y axis
 	var x = d3.scaleBand().rangeRound([ 0, width ]).padding(0.1), y = d3
 			.scaleLinear().rangeRound([ height, 0 ]);
@@ -176,7 +180,8 @@ function drawBarChart(dataArray) {
 	var g = svg.append("g").attr("transform",
 			"translate(" + margin.left + "," + margin.top + ")");
 
-	//calculate the domain according to data, use keys as x, use max count as the y upper bound;
+	// calculate the domain according to data, use keys as x, use max count as
+	// the y upper bound;
 	x.domain(data.map(function(d) {
 		return d.key;
 	}));
@@ -186,17 +191,17 @@ function drawBarChart(dataArray) {
 	});
 	y.domain([ 0, max_frequency ]);
 
-	//draw x axis
+	// draw x axis
 	g.append("g").attr("class", "axis axis--x").attr("transform",
 			"translate(0," + height + ")").call(d3.axisBottom(x));
 
-	//draw y axis
+	// draw y axis
 	g.append("g").attr("class", "axis axis--y").call(d3.axisLeft(y).ticks(10))
 			.append("text").attr("transform", "rotate(-90)").attr("y", 6).attr(
 					"dy", "0.71em").attr("text-anchor", "end")
 			.text("Frequency");
 
-	//draw bars
+	// draw bars
 	g.selectAll("rect").data(data).enter().append("rect").style('fill',
 			function(d) {
 				return bar_color(d.value.meanScore);
@@ -223,15 +228,13 @@ function drawBarChart(dataArray) {
 
 function drawSliderBar(dataArray) {
 	
-	var svg = d3.select('.slider-bar').select("svg"), margin = {
-		top : 40,
-		right : 40,
-		bottom : 60,
-		left : 80
-	}, width = svg.node().clientWidth - margin.left - margin.right, height = svg
-			.node().clientHeight
-			- margin.top - margin.bottom;
+	var svg = d3.select('.slider-bar').select("svg"),
+	margin = {top : 40,right : 40,bottom : 60,left : 80},
+	width = svg.node().clientWidth - margin.left - margin.right, 
+	height = svg.node().clientHeight- margin.top - margin.bottom;
 
+	svg.html("");
+	
 	var x = d3.scaleLinear().domain([ 0, 100 ]).range([ 0, width ]).clamp(true);
 
 	var y = d3.scaleLinear().range([ height, 0 ]);
@@ -279,11 +282,12 @@ function drawSliderBar(dataArray) {
 				slider.interrupt();
 			}).on("start drag", function() {
 				currentValue = d3.event.x;
-				//make sure the handle located within the range, assisted by the clamp setting of x axis;
+				// make sure the handle located within the range, assisted by
+				// the clamp setting of x axis;
 				handle.attr("cx", x(x.invert(currentValue)));
 			}).on("end", function() {
 				var threshold = x.invert(d3.event.x);
-				//               filterBySocre(threshold);
+				// filterBySocre(threshold);
 
 				handle.attr("score", x.invert(d3.event.x));
 				
@@ -312,6 +316,89 @@ function drawSliderBar(dataArray) {
 	var handle = slider.insert("circle", ".track-overlay").attr("class",
 			"handle").attr("r", 9).attr("score",0);
 
+}
+
+function drawTreemap(dataArray)
+{
+
+	// aggregate map entities by key;
+	let entities = dataArray.map(a => a.entity);
+	var entries = Object.entries(entities);
+
+	var entity_sum = {}
+	for(var i=0;i<entities.length;i++)
+	{
+		var entity = entities[i];
+		if(entity!=null){
+		var keys = Object.keys(entity);
+		for(var j=0;j<keys.length;j++)
+		{
+			var key = keys[j];
+			if (!entity_sum[key]) {
+				entity_sum[key] = entity[key];
+			  } else {
+				  entity_sum[key] += entity[key];
+			  }
+				
+		}
+	}
+	}
+	console.log(entity_sum);
+	
+	var output = Object.entries(entity_sum).map(([name, value]) => ({name,value}));
+	
+	
+	var data = {
+			  "name": "",
+			  "children": output
+			}
+	
+	console.log(data);
+	
+	var svg = d3.select('.treemap').select("svg"),
+	width = svg.node().clientWidth, 
+	height = svg.node().clientHeight;
+	
+	svg.html("");
+
+	
+	var treemap = d3.treemap()
+    .size([width, height])
+    .paddingInner(1);
+	
+	var root = d3.hierarchy(data);
+	
+	root.sum(function(d) {
+		  return d.value;
+		});
+	
+	treemap(root);
+	
+	
+	var nodes = svg.selectAll('g')
+	  .data(root.descendants())
+	  .enter()
+	  .append('g')
+	  .attr('transform', function(d) {return 'translate(' + [d.x0, d.y0] + ')'})
+
+	nodes
+	  .append('rect')
+	  .attr('class','tree-rect')
+	  .attr('width', function(d) { return d.x1 - d.x0; })
+	  .attr('height', function(d) { return d.y1 - d.y0; })
+
+	nodes
+	  .append('text')
+	  .attr('class','treemap-text')
+	  .attr('dx', 4)
+	  .attr('dy', 14)
+	  .text(function(d) {
+	    return d.data.name;
+	  })
+	
+
+
+	  
 }
 
 
@@ -344,5 +431,5 @@ function update() {
 		}
 	
 	loadIconImages(sub_data);
-
+	drawTreemap(sub_data);
 }
