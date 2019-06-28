@@ -5,7 +5,12 @@
 var imageData;
 var bar_color;
 
-d3.json("NateSilver_Example/NateSilver_Example2.json").then(function(data) {
+var urlParams = new URLSearchParams(window.location.search);
+
+var exampleId = urlParams.get('exampleId');
+if(exampleId==null)exampleId="test2";
+
+d3.json(exampleId+"/matches.json").then(function(data) {
 
 	imageData = data;
 	initialize();

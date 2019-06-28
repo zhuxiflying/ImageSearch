@@ -19,9 +19,9 @@ import org.json.simple.parser.ParseException;
 
 public class SearchResultSynthesize {
 
-	private static String file_path = "D:\\Projects\\ViralMap\\viral_examples\\";
-	private static String exampleName = "NateSilver_Example";
-	private static String ImageMapping_fileName = "D:\\Projects\\ViralMap\\viral_examples\\NateSilver_Example\\origin\\image_mapping.csv";
+	private static String file_path = "D:\\ViralMap\\";
+	private static String exampleName = "test1";
+	private static String ImageMapping_fileName = file_path+exampleName+"\\origin\\image_mapping.csv";
 	private static JSONObject search_result = null;
 
 	// the mapping file recording original image url and local image url;
@@ -47,11 +47,14 @@ public class SearchResultSynthesize {
 		JSONArray matchJson = new JSONArray();
 		for (int i = 0; i < matches.size(); i++) {
 			JSONObject match = (JSONObject) matches.get(i);
+			double score = (double) match.get("score");
+			if(score>15)
+			{
+
 			JSONObject match2 = new JSONObject();
 			String domainName = (String) match.get("domain");
 			match2.put("Domain", domainName);
 //			System.out.println("Domain Name:" + domainName);
-			double score = (double) match.get("score");
 			match2.put("Score", score);
 //			System.out.println("Score:" + score);
 			String image_url = (String) match.get("image_url");
@@ -110,7 +113,7 @@ public class SearchResultSynthesize {
 			}
 
 			if (!localImage.equals("unavailable")) {
-				String origin_url = localImage.replace("D:\\Projects\\ViralMap\\viral_examples\\", "");
+				String origin_url = localImage.replace(file_path, "");
 				match2.put("OriginImage", origin_url);
 			}
 			match2.put("Link", links);
@@ -119,9 +122,10 @@ public class SearchResultSynthesize {
 //			System.out.println("Link:" + links);
 			System.out.println(i + "," + backlinks.size() + "," + origin_image.size());
 			matchJson.add(match2);
+			}
 		}
 //		System.out.println("#results:" + matches.size());
-		PrintWriter out = new PrintWriter(file_path + exampleName + "\\NateSilver_Example2.json");
+		PrintWriter out = new PrintWriter(file_path + exampleName + "\\matches.json");
 		out.println(matchJson.toString());
 		out.close();
 	}
@@ -133,7 +137,7 @@ public class SearchResultSynthesize {
 	 */
 	private static void loadJSONFile() throws Exception {
 		JSONParser parser = new JSONParser();
-		String jsonFile = file_path + exampleName + "\\NateSilver_Example.json";
+		String jsonFile = file_path + exampleName + "\\"+exampleName+".json";
 		Object obj = parser.parse(new FileReader(jsonFile));
 		search_result = (JSONObject) obj;
 

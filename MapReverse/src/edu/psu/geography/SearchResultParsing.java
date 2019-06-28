@@ -27,16 +27,16 @@ import org.json.simple.parser.JSONParser;
  */
 public class SearchResultParsing {
 
-	private static String file_path = "D:\\Projects\\ViralMap\\viral_examples\\";
-	private static String exampleName = "NateSilver_Example";
+	private static String file_path = "D:\\ViralMap\\";
+	private static String exampleName = "test4";
 	private static JSONObject search_result = null;
 
 	public static void main(String[] args) throws Exception {
 		loadJSONFile();
-		 resultInfo();
+		// resultInfo();
 		// resultAnalyzer();
-		// iconImageDownload();
-		//originImageDownload();
+	    iconImageDownload();
+		originImageDownload();
 	}
 
 	/**
@@ -46,7 +46,7 @@ public class SearchResultParsing {
 	 */
 	private static void loadJSONFile() throws Exception {
 		JSONParser parser = new JSONParser();
-		String jsonFile = file_path + exampleName + "\\NateSilver_Example.json";
+		String jsonFile = file_path + exampleName + "\\"+exampleName+".json";
 		Object obj = parser.parse(new FileReader(jsonFile));
 		search_result = (JSONObject) obj;
 
@@ -149,7 +149,7 @@ public class SearchResultParsing {
 				if (origin_images.get(url) == null) {
 
 					try {
-						String local_url = "D:\\Projects\\ViralMap\\viral_examples\\NateSilver_Example\\origin\\" + id;
+						String local_url = file_path+exampleName+"\\origin\\" + id;
 						downloadImage(url, local_url);
 						origin_images.put(url, local_url);
 						id++;
@@ -164,7 +164,7 @@ public class SearchResultParsing {
 		}
 
 		// record the mapping in the file;
-		String filename = "D:\\Projects\\ViralMap\\viral_examples\\NateSilver_Example\\origin\\image_mapping.csv";
+		String filename = file_path+exampleName+"\\origin\\image_mapping.csv";
 		FileWriter out = new FileWriter(filename);
 		CSVPrinter printer = CSVFormat.DEFAULT.withHeader("image_url", "loca_url").print(out);
 

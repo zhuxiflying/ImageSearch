@@ -35,7 +35,9 @@ import com.google.protobuf.ByteString;
  */
 public class WebEntityDetection {
 
-	private static String fileName = "D:\\Projects\\ViralMap\\viral_examples\\NateSilver_Example\\origin\\image_mapping.csv";
+	private static String file_path = "D:\\ViralMap\\";
+	private static String exampleName = "test4";
+	private static String fileName = file_path+exampleName+"\\origin\\image_mapping.csv";
 	private static HashSet<String> imageList = null;
 	private static HashMap<String, HashMap<String, Float>> map_entities = null;
 
@@ -59,8 +61,8 @@ public class WebEntityDetection {
 
 				List<AnnotateImageRequest> requests = new ArrayList<>();
 				Image img = Image.newBuilder().setContent(imgBytes).build();
-//				Feature feat = Feature.newBuilder().setType(Type.WEB_DETECTION).build();
-				Feature feat = Feature.newBuilder().setType(Type.LABEL_DETECTION).build();
+				Feature feat = Feature.newBuilder().setType(Type.WEB_DETECTION).build();
+//				Feature feat = Feature.newBuilder().setType(Type.LABEL_DETECTION).build();
 				AnnotateImageRequest request = AnnotateImageRequest.newBuilder().addFeatures(feat).setImage(img)
 						.build();
 				requests.add(request);
@@ -92,20 +94,19 @@ public class WebEntityDetection {
 				map_entities.put(url, entities);
 			}
 		}
-		writeEntityJSonFile("D:\\Projects\\ViralMap\\viral_examples\\NateSilver_Example\\label_json.json");
+//		writeEntityJSonFile(file_path+exampleName+"\\entity_json.json");
+		writeEntityJSonFile(file_path+exampleName+"\\label_json.json");
 	}
 
 	private static void loadImageList() throws Exception {
 		// TODO Auto-generated method stub
 		imageList = new HashSet<String>();
-		String url = "D:\\Projects\\ViralMap\\viral_examples\\NateSilver_Example\\origin2\\2.jpg";
-		imageList.add(url);
-//		Reader in = new FileReader(fileName);
-//		Iterable<CSVRecord> records = CSVFormat.EXCEL.withFirstRecordAsHeader().parse(in);
-//		for (CSVRecord record : records) {
-//			String hashtags = record.get("loca_url");
-//			imageList.add(hashtags);
-//		}
+		Reader in = new FileReader(fileName);
+		Iterable<CSVRecord> records = CSVFormat.EXCEL.withFirstRecordAsHeader().parse(in);
+		for (CSVRecord record : records) {
+			String hashtags = record.get("loca_url");
+			imageList.add(hashtags);
+		}
 	}
 
 	/**
