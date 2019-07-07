@@ -30,6 +30,8 @@ function initialize() {
 
 // initialize color scale
 function initialColorScale(dataArray) {
+	
+	// initial color scale for bar chart
 	bar_color = d3.scaleQuantile().range(
 			[ "#feebe2", "#fbb4b9", "#f768a1", "#ae017e" ]);
 	var data = d3.nest().key(function(d) {
@@ -50,6 +52,8 @@ function initialColorScale(dataArray) {
 		return d.value.meanScore
 	});
 	bar_color.domain([ min_score, max_score ]);
+	
+	
 }
 
 // load data into icon image gallery
@@ -348,9 +352,24 @@ function drawTreemap(dataArray)
 		}
 	}
 	}
-	console.log(entity_sum);
+
 	
 	var output = Object.entries(entity_sum).map(([name, value]) => ({name,value}));
+	
+	console.log(output);
+	
+	
+	treemap_color = d3.scaleQuantile().range(
+//			[ "#b3e2cd", "#fdcdac", "#cbd5e8", "#f4cae4" , "#e6f5c9"]);
+			[ "#e41a1c", "#377eb8", "#4daf4a", "984ea3" , "#ff7f00"]);
+	
+	var min_score = d3.min(output, function(d) {
+		return d.value
+	});
+	var max_score = d3.max(output, function(d) {
+		return d.value
+	});
+	treemap_color.domain([ 0, max_score ]);
 	
 	
 	var data = {
@@ -391,15 +410,19 @@ function drawTreemap(dataArray)
 	  .attr('class','tree-rect')
 	  .attr('width', function(d) { return d.x1 - d.x0; })
 	  .attr('height', function(d) { return d.y1 - d.y0; })
+	  .style('fill',function(d){ return treemap_color(d.value)})
+	  
 
 	nodes
 	  .append('text')
+	  .attr('width', function(d) { return d.x1 - d.x0; })
+	  .attr('height', function(d) { return d.y1 - d.y0; })
+	  .attr('content',function(d) { return d.data.name;})
 	  .attr('class','treemap-text')
-	  .attr('dx', 4)
-	  .attr('dy', 14)
 	  .text(function(d) {
 	    return d.data.name;
 	  })
+	  .call(wrap2);
 	
 
 
@@ -438,3 +461,120 @@ function update() {
 	loadIconImages(sub_data);
 	drawTreemap(sub_data);
 }
+
+
+//wrap text function
+function wrap(text, width) {
+	
+	console.log(width);
+
+	
+    text.each(function () {
+        var text = d3.select(this),
+//            words = text.text().split(/\s+/).reverse(),
+           words = text.text().split(" ").reverse(),
+            word,
+            line = [],
+            lineNumber = 0,
+            lineHeight = 1.1, // ems
+            x = text.attr("x"),
+            y = text.attr("y"),
+            dx = 4,
+            dy = 14, //parseFloat(text.attr("dy")),
+            
+            
+            
+            tspan = text.text(null)
+                        .append("tspan")
+                        .attr("x", x)
+                        .attr("y", y)
+                        .attr("dx",dx)
+                        .attr("dy", dy);
+
+        
+        while (word = words.pop()) {
+        	
+            line.push(word);
+            tspan.text(line.join(" "));
+            if (tspan.node().getComputedTextLength() > width) {
+                line.pop();
+                tspan.text(line.join(" "));
+                line = [word];
+                console.log(x);
+                tspan = text.append("tspan")
+                            .attr("x", 0)
+                            .attr("y", y)
+                            .attr("dx", dx )
+                            .attr("dy", ++lineNumber * lineHeight + dy )
+                            .text(word);
+            }
+        }
+    });
+}
+
+
+function wrap2(text) {
+	  text.each(function() {
+		  
+		    var text = d3.select(this),
+	           words = text.text().split(" ").reverse(),
+		        word,
+		        line = [],
+		        lineNumber = 0,
+		        lineHeight = 1.1, // ems
+		        y = text.attr("y"),
+		        dy = 14,
+		        tspan = text.text(null).append("tspan").attr("x", 0).attr("y", y).attr("dy", dy);
+		    
+
+		var text_height = parseFloat(text.attr("height"));
+		var text_width = parseFloat(text.attr("width"));
+		var text_content = text.attr("content");
+		var length = textWidth(text_content, "12px sans-serif");
+
+		console.log(text_content);
+		console.log(text_height);
+		  
+		if(text_height> 20&&text_width>length)
+		{
+	        tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", dy).text(text_content);
+//	        while (word = words.pop()) {
+//	        	
+//	            line.push(word);
+//	            tspan.text(line.join(" "));
+//	            if (tspan.node().getComputedTextLength() > width) {
+//	                line.pop();
+//	                tspan.text(line.join(" "));
+//	                line = [word];
+//	                console.log(x);
+//	                tspan = text.append("tspan")
+//	                            .attr("x", 0)
+//	                            .attr("y", y)
+//	                            .attr("dx", dx )
+//	                            .attr("dy", ++lineNumber * lineHeight + dy+"em" )
+//	                            .text(word);
+//	            }
+//	        }
+	    }
+		
+	  });
+	}
+
+function textWidth(text, fontProp) {
+    var tag = document.createElement("div");
+    tag.style.position = "absolute";
+    tag.style.left = "-99in";
+    tag.style.whiteSpace = "nowrap";
+    tag.style.font = fontProp;
+    tag.innerHTML = text;
+
+    document.body.appendChild(tag);
+
+    var result = tag.clientWidth;
+
+    document.body.removeChild(tag);
+
+    return result;
+}
+
+
