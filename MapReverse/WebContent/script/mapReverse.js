@@ -3,6 +3,7 @@
  */
 
 var imageData;
+var originImage;
 var bar_color;
 
 var urlParams = new URLSearchParams(window.location.search);
@@ -13,6 +14,8 @@ if(exampleId==null)exampleId="test2";
 d3.json(exampleId+"/matches.json").then(function(data) {
 
 	imageData = data;
+	originImage = data.slice(0, 1);
+	console.log(originImage);
 	initialize();
 	
 	d3.select('.control-panel').on('dblclick',initialize);
@@ -63,6 +66,17 @@ function loadIconImages(data) {
 
 	// clean previous elements
 	gallery_container.selectAll("*").remove();
+	
+	// append div for origin icon image
+	var icon_origin = gallery_container.selectAll('.origin-icon').data(originImage)
+	.enter().append('div').attr('class', 'origin-icon');
+	
+	// append iamge element for div container
+	gallery_container.selectAll('.origin-icon').append('img').attr('src',
+			function(d) {
+				return d.Image_url;
+			});
+	
 	// append div for icon images
 	var icon_maps = gallery_container.selectAll('.icon-image').data(data)
 			.enter().append('div').attr('class', 'icon-image').style(
@@ -76,9 +90,39 @@ function loadIconImages(data) {
 				return d.Image_url;
 			});
 
-	// add event listener for load original image when clicked
+	// add event listener for load original image when clicked or hovered
 	gallery_container.selectAll('.icon-image').on("click", loadOriginalImage);
+	gallery_container.selectAll('.icon-image').on("mouseover", hoverOnImage);
+	gallery_container.selectAll('.icon-image').on("mouseout", hoverOnImageEnd);
+	gallery_container.selectAll('.origin-icon').on("click", loadOriginalImage);
 }
+
+// This method highligh information when the user hover on the
+// icon image;
+function hoverOnImage(data)
+{
+// alert(data.Crawl_Date);
+// alert(data.entity);
+	var key = data.Crawl_Date.split("-")[0] + "-" + data.Crawl_Date.split("-")[1];
+	d3.select("[date='" + key + "']").attr('class','bar-hovered');
+	if(data.entity!=null)
+	{
+	var entity_keys = Object.keys(data.entity);
+	console.log(entity_keys);
+	for(var i=0;i<entity_keys.length;i++)
+    {
+		
+		d3.select('.treemap').select("[name='" + entity_keys[i].replace(/[^a-zA-Z ]/g, "") + "']").attr('class','tree-rect-hovered');
+    }
+	}
+}
+
+function hoverOnImageEnd(data)
+{
+	d3.select(".bar-hovered").attr('class',null);
+	d3.select('.treemap').selectAll(".tree-rect-hovered").attr('class','tree-rect');
+}
+
 
 // This method load original image and information when the user click on the
 // icon image;
@@ -130,7 +174,9 @@ function loadOriginalImage(data) {
 		d3.select('.image-container').html("");
 		d3.select('.image-container').append('div').attr('class',
 				'origin-image');
-		d3.select('.origin-image').text("Not available");
+		d3.select('.origin-image').text("Original Image Not Available");
+		d3.select('.origin-image').append('img').attr('class', 'imageDiv');
+		d3.select('.imageDiv').attr('src', data.Image_url);
 
 		// if the original image is not available, the entities and labels
 		// derived from the original image are not available as well;
@@ -253,7 +299,6 @@ function drawSliderBar(dataArray) {
 	}).domain(x.domain()).thresholds(x.ticks(40));
 
 	var bins = histogram(dataArray);
-	console.log(bins);
 
 	y.domain([ 0, d3.max(bins, function(d) {
 		return d.length;
@@ -325,7 +370,9 @@ function drawSliderBar(dataArray) {
 	var handle = slider.insert("circle", ".track-overlay").attr("class",
 			"handle").attr("r", 9).attr("score",0);
 
+
 }
+
 
 function drawTreemap(dataArray)
 {
@@ -356,12 +403,10 @@ function drawTreemap(dataArray)
 	
 	var output = Object.entries(entity_sum).map(([name, value]) => ({name,value}));
 	
-	console.log(output);
 	
 	
 	treemap_color = d3.scaleQuantile().range(
-//			[ "#b3e2cd", "#fdcdac", "#cbd5e8", "#f4cae4" , "#e6f5c9"]);
-			[ "#e41a1c", "#377eb8", "#4daf4a", "984ea3" , "#ff7f00"]);
+			[ "#8dd3c7", "#ffffb3", "#bebada", "#fb8072" , "#80b1d3","#fdb462", "#b3de69", "#fccde5", "#d9d9d9" , "#bc80bd"]);
 	
 	var min_score = d3.min(output, function(d) {
 		return d.value
@@ -377,7 +422,6 @@ function drawTreemap(dataArray)
 			  "children": output
 			}
 	
-	console.log(data);
 	
 	var svg = d3.select('.treemap').select("svg"),
 	width = svg.node().clientWidth, 
@@ -410,6 +454,7 @@ function drawTreemap(dataArray)
 	  .attr('class','tree-rect')
 	  .attr('width', function(d) { return d.x1 - d.x0; })
 	  .attr('height', function(d) { return d.y1 - d.y0; })
+	  .attr('name',function(d) { return d.data.name.replace(/[^a-zA-Z ]/g, "");})
 	  .style('fill',function(d){ return treemap_color(d.value)})
 	  
 
@@ -443,12 +488,10 @@ function update() {
 		date = selected_bar.attr('date');
 	}
 	
-	console.log(score);
 	var sub_data = imageData.filter(function(d) {
 		return d.Score >= score;
 	});
 	
-	console.log(date);
 	if(date!=null)
 		{
 		sub_data = sub_data
@@ -463,15 +506,14 @@ function update() {
 }
 
 
-//wrap text function
+// wrap text function
 function wrap(text, width) {
 	
-	console.log(width);
 
 	
     text.each(function () {
         var text = d3.select(this),
-//            words = text.text().split(/\s+/).reverse(),
+// words = text.text().split(/\s+/).reverse(),
            words = text.text().split(" ").reverse(),
             word,
             line = [],
@@ -480,7 +522,7 @@ function wrap(text, width) {
             x = text.attr("x"),
             y = text.attr("y"),
             dx = 4,
-            dy = 14, //parseFloat(text.attr("dy")),
+            dy = 14, // parseFloat(text.attr("dy")),
             
             
             
@@ -500,7 +542,6 @@ function wrap(text, width) {
                 line.pop();
                 tspan.text(line.join(" "));
                 line = [word];
-                console.log(x);
                 tspan = text.append("tspan")
                             .attr("x", 0)
                             .attr("y", y)
@@ -532,29 +573,27 @@ function wrap2(text) {
 		var text_content = text.attr("content");
 		var length = textWidth(text_content, "12px sans-serif");
 
-		console.log(text_content);
-		console.log(text_height);
 		  
 		if(text_height> 20&&text_width>length)
 		{
 	        tspan = text.append("tspan").attr("x", 0).attr("y", y).attr("dy", dy).text(text_content);
-//	        while (word = words.pop()) {
+// while (word = words.pop()) {
 //	        	
-//	            line.push(word);
-//	            tspan.text(line.join(" "));
-//	            if (tspan.node().getComputedTextLength() > width) {
-//	                line.pop();
-//	                tspan.text(line.join(" "));
-//	                line = [word];
-//	                console.log(x);
-//	                tspan = text.append("tspan")
-//	                            .attr("x", 0)
-//	                            .attr("y", y)
-//	                            .attr("dx", dx )
-//	                            .attr("dy", ++lineNumber * lineHeight + dy+"em" )
-//	                            .text(word);
-//	            }
-//	        }
+// line.push(word);
+// tspan.text(line.join(" "));
+// if (tspan.node().getComputedTextLength() > width) {
+// line.pop();
+// tspan.text(line.join(" "));
+// line = [word];
+// console.log(x);
+// tspan = text.append("tspan")
+// .attr("x", 0)
+// .attr("y", y)
+// .attr("dx", dx )
+// .attr("dy", ++lineNumber * lineHeight + dy+"em" )
+// .text(word);
+// }
+// }
 	    }
 		
 	  });
