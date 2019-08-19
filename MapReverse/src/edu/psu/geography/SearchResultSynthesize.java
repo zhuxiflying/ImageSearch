@@ -20,7 +20,7 @@ import org.json.simple.parser.ParseException;
 public class SearchResultSynthesize {
 
 	private static String file_path = "D:\\ViralMap\\";
-	private static String exampleName = "test1";
+	private static String exampleName = "test8";
 	private static String ImageMapping_fileName = file_path+exampleName+"\\origin\\image_mapping.csv";
 	private static JSONObject search_result = null;
 
@@ -34,6 +34,7 @@ public class SearchResultSynthesize {
 	private static HashMap<String, HashMap<String, Double>> image_labels = null;
 
 	public static void main(String[] args) throws Exception {
+		
 		loadJSONFile();
 
 		loadLocalImage();

@@ -28,7 +28,7 @@ import org.json.simple.parser.JSONParser;
 public class SearchResultParsing {
 
 	private static String file_path = "D:\\ViralMap\\";
-	private static String exampleName = "test4";
+	private static String exampleName = "test8";
 	private static JSONObject search_result = null;
 
 	public static void main(String[] args) throws Exception {

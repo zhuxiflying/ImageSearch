@@ -36,7 +36,7 @@ import com.google.protobuf.ByteString;
 public class WebEntityDetection {
 
 	private static String file_path = "D:\\ViralMap\\";
-	private static String exampleName = "test4";
+	private static String exampleName = "test8";
 	private static String fileName = file_path+exampleName+"\\origin\\image_mapping.csv";
 	private static HashSet<String> imageList = null;
 	private static HashMap<String, HashMap<String, Float>> map_entities = null;
@@ -76,26 +76,26 @@ public class WebEntityDetection {
 					// Search the web for usages of the image. You could use these signals later
 					// for user input moderation or linking external references.
 					// For a full list of available annotations, see http://g.co/cloud/vision/docs
-//					WebDetection annotation = res.getWebDetection();
-//					for (WebEntity entity : annotation.getWebEntitiesList()) {
-//						entities.put(entity.getDescription(), entity.getScore());
-//						System.out.println(
-//								entity.getDescription() + " : " + entity.getEntityId() + " : " + entity.getScore());
-//					}
+					WebDetection annotation = res.getWebDetection();
+					for (WebEntity entity : annotation.getWebEntitiesList()) {
+						entities.put(entity.getDescription(), entity.getScore());
+						System.out.println(
+								entity.getDescription() + " : " + entity.getEntityId() + " : " + entity.getScore());
+					}
 					
 					// For full list of available annotations, see http://g.co/cloud/vision/docs
-					for (EntityAnnotation annotation : res.getLabelAnnotationsList()) {
-						entities.put(annotation.getDescription(), annotation.getScore());
-						System.out.println(
-								annotation.getDescription() + " : " + annotation.getScore());
-//						annotation.getAllFields().forEach((k, v) -> System.out.printf("%s : %s\n", k, v.toString()));
-					}
+//					for (EntityAnnotation annotation : res.getLabelAnnotationsList()) {
+//						entities.put(annotation.getDescription(), annotation.getScore());
+//						System.out.println(
+//								annotation.getDescription() + " : " + annotation.getScore());
+////						annotation.getAllFields().forEach((k, v) -> System.out.printf("%s : %s\n", k, v.toString()));
+//					}
 				}
 				map_entities.put(url, entities);
 			}
 		}
-//		writeEntityJSonFile(file_path+exampleName+"\\entity_json.json");
-		writeEntityJSonFile(file_path+exampleName+"\\label_json.json");
+		writeEntityJSonFile(file_path+exampleName+"\\entity_json.json");
+//		writeEntityJSonFile(file_path+exampleName+"\\label_json.json");
 	}
 
 	private static void loadImageList() throws Exception {
