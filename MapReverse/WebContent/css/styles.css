@@ -111,8 +111,6 @@ html, body {
 	
 }
 
-
-
 .bar-chart-svg {
 	height: 100%;
 	width: 100%;
@@ -156,21 +154,21 @@ html, body {
 	width: 100%;
 }
 
-.tree-rect{
-  fill-opacity: 0.3;
-  stroke: white;
+.tree-rect {
+	fill-opacity: 0.3;
+	stroke: white;
 }
 
-.tree-rect-hovered{
+.tree-rect-hovered {
 	fill-opacity: 0.3;
-  	stroke-width: 4;
+	stroke-width: 1.5;
 	stroke: red;
 }
 
-.treemap-text{
-  font-family: "Helvetica Neue", Helvetica, sans-serif;
-  fill: black;
-  font-size: 12px;
+.treemap-text {
+	font-family: "Helvetica Neue", Helvetica, sans-serif;
+	fill: black;
+	font-size: 12px;
 }
 
 .text-title {
@@ -209,6 +207,23 @@ html, body {
 	margin-left: 20px;
 }
 
+.tooltip {
+	position: absolute;
+	display: block;
+	overflow: auto;
+	text-align: center;
+	width: 80px;
+	padding: 2px;
+	margin-top: -20px;
+	font: 10px sans-serif;
+	background: white;
+	pointer-events: none;
+	border-color: #ccc;
+	border-width: 1px;
+	border-radius: 5px;
+	border-style: solid;
+}
+
 img {
 	display: block;
 	margin-left: auto;
@@ -226,8 +241,7 @@ img {
 	stroke: steelblue;
 }
 
-.bar-hovered
-{
+.bar-hovered {
 	stroke-width: 3;
 	stroke: red;
 }

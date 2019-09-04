@@ -5,11 +5,14 @@
 var imageData;
 var originImage;
 var bar_color;
+var tiptool_div;
 
 var urlParams = new URLSearchParams(window.location.search);
 
 var exampleId = urlParams.get('exampleId');
 if(exampleId==null)exampleId="test2";
+
+
 
 d3.json(exampleId+"/matches.json").then(function(data) {
 
@@ -17,6 +20,7 @@ d3.json(exampleId+"/matches.json").then(function(data) {
 	originImage = data.slice(0, 1);
 	console.log(originImage);
 	initialize();
+	tiptool_div = d3.select("body").append("div").attr("class", "tooltip").style("display", "none");
 	
 	d3.select('.control-panel').on('dblclick',initialize);
 
@@ -94,7 +98,7 @@ function loadIconImages(data) {
 	gallery_container.selectAll('.icon-image').on("click", loadOriginalImage);
 	gallery_container.selectAll('.icon-image').on("mouseover", hoverOnImage);
 	gallery_container.selectAll('.icon-image').on("mouseout", hoverOnImageEnd);
-	gallery_container.selectAll('.origin-icon').on("click", loadOriginalImage);
+	gallery_container.selectAll('.origin-icon').on("click", backToGallery);
 }
 
 // This method highligh information when the user hover on the
@@ -115,6 +119,11 @@ function hoverOnImage(data)
 		d3.select('.treemap').select("[name='" + entity_keys[i].replace(/[^a-zA-Z ]/g, "") + "']").attr('class','tree-rect-hovered');
     }
 	}
+}
+
+function backToGallery()
+{
+	location.replace("http://localhost:8080/MapReverse/MapGallery.html");
 }
 
 function hoverOnImageEnd(data)
@@ -469,6 +478,10 @@ function drawTreemap(dataArray)
 	  })
 	  .call(wrap2);
 	
+	nodes
+    .on("mouseover", mouseover)
+    .on("mousemove", mousemove)
+    .on("mouseout", mouseout);
 
 
 	  
@@ -615,5 +628,22 @@ function textWidth(text, fontProp) {
 
     return result;
 }
+
+//handle mouse over on 
+
+function mouseover() {
+	tiptool_div.style("display", "inline");
+	}
+
+function mousemove(d)
+{
+	 tiptool_div.text(d.data.name)	
+    .style("left", (d3.event.pageX - 80) + "px")		
+    .style("top", (d3.event.pageY - 10) + "px");	
+}
+
+function mouseout() {
+	tiptool_div.style("display", "none");
+	}
 
 
