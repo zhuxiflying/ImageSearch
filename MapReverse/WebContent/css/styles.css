@@ -35,10 +35,24 @@ html, body {
 	grid-row-gap: 10px;
 }
 
+.back-icon {
+	height: 100px;
+}
+
+.back-icon:hover {
+  transform: scale(1.1); 
+  cursor: pointer;
+}
+
 .icon-image {
 	height: 100px;
 	border-bottom-width: 5px;
 	border-bottom-style: solid;
+}
+
+.icon-image:hover {
+  transform: scale(1.1);
+  cursor: pointer;
 }
 
 .origin-icon {

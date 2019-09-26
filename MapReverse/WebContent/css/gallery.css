@@ -1,0 +1,67 @@
+html, body {
+	height: calc(100% - 20px);
+	width: calc(100% - 20px);
+	padding: 10px;
+	margin: 0;
+}
+
+.grid-container {
+	height: 100%;
+	width: 100%;
+	display: grid;
+	grid-template-columns: repeat(10, 1fr);
+	grid-template-rows: repeat(10, 1fr);
+	grid-column-gap: 40px;
+	grid-row-gap: 40px;
+}
+
+.log-container{
+	grid-column-start: 3;
+	grid-column-end: 5;
+	grid-row-start: 2;
+	grid-row-end: 3;
+}
+
+.text-container{
+	grid-column-start: 3;
+	grid-column-end: 9;
+	grid-row-start: 9;
+	grid-row-end: 10;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 22px;
+}
+
+
+.map-gallery-container {
+	grid-column-start: 3;
+	grid-column-end: 9;
+	grid-row-start: 3;
+	grid-row-end: 9;
+	display: grid;
+	grid-template-columns: repeat(4, 1fr);
+	grid-template-rows: repeat(2, 1fr);
+	grid-column-gap: 20px;
+	grid-row-gap: 20px;
+}
+
+.map_icon {
+	height: 100%;
+	width: 100%;
+	border-width: 2px;
+	border-style: solid;
+	border-color: #ccc;
+}
+
+.map_icon:hover {
+  transform: scale(1.05); /* (150% zoom - Note: if the zoom is too large, it will go outside of the viewport) */
+  cursor: pointer;
+}
+
+img {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	max-width: 100%;
+	max-height: 100%;
+	object-fit: contain;
+}
