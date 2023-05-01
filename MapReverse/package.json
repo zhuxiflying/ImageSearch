@@ -6,6 +6,6 @@
   "license": "MIT",
   "readmeFilename": "README.md",
   "dependencies": {
-    "tineye-api": "^1.0.0"
+    "tineye-api": "^1.1.5"
   }
 }
